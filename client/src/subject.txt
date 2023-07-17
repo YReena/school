@@ -1,0 +1,209 @@
+import React, { useState } from 'react';
+import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+
+const Subject = () => {
+    const [getSubject, setGetSubject] = useState([]);
+
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+
+    const [Subject, setSubject] = useState({
+        grade: "", subject: "", semester:""
+    });
+    let value, name;
+    const inputHandle = (e) => {
+        name = e.target.name;
+        value = e.target.value;
+        setSubject({ ...Subject, [name]: value });
+    }
+
+    const addSubject = async (e) => {
+        e.preventDefault();
+        const { grade, subject,semester } = Subject;
+        const res = await fetch('/subject', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                grade, subject , semester
+            })
+        });
+
+        const result = await res.json();
+        if (result.message) {
+            setMessage(result.message);
+            setError();
+        }
+        else {
+            setError(result.error);
+            setMessage();
+        }
+        getData();
+
+    }
+
+    const getData = async () => {
+        const sub = await fetch('/subject/' + Subject.grade, {
+            method: 'GET'
+        });
+
+        const subList = await sub.json();
+        setGetSubject(subList);
+
+    }
+    const deleteSubject = async(id)=>{
+        const del = await fetch(`/subject/${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        const delSub = await del.json();
+        if(delSub){
+          getData();
+        }
+    }
+
+    return (<>
+        <div className='add-subject-form'>
+
+            <div className='container'>
+
+                <form method='POST'>
+                    <h1 id='add-sub-handling'>Add Subject</h1>
+                    <div className='row'>
+                        <div className="col">
+                            <label>Grade</label>
+                            <select id="inputgrade" class="form-control" name='grade' value={Subject.grade} onChange={inputHandle}>
+                                <option >Grade</option>
+                                <option value="Nursary">Nursary</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+                            </select>
+                        </div>
+                        <div className="col">
+                            <label>Semester</label>
+                            <select id="inputsemester" class="form-control" name='semester' value={Subject.semester} onChange={inputHandle}>
+                                <option >Grade</option>
+                                <option value="firstSem">First Sem</option>
+                                <option value="secSem">Second Sem</option>
+                                <option value="thirdSem">Third Sem</option>
+                            </select>
+                        </div>
+                        <div className="col">
+                            <label>Subject Name</label>
+                            <input type="text" className="form-control" placeholder="Subject Name" name="subject" value={Subject.subject} onChange={inputHandle} />
+                        </div>
+
+                    </div>
+                    <div className='row'>
+                        <div className="col">
+                            <button id='add-btn' onClick={addSubject}>Add</button>
+                        </div>
+
+                        <div className='error-div'>
+                            {message === "error" ? <p className='error-display'>*{error} </p> : <p className='message-display'>{message}</p>}
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <MDBTable>
+                        <MDBTableHead dark>
+                            <tr>
+                                <th scope='col'>#</th>
+                                <th scope='col'>Grade</th>
+                                <th scope='col'>Semester</th>
+                                <th scope='col'>Subject</th>
+                                <th scope='col'>Delete</th>
+                            </tr>
+                        </MDBTableHead>
+                        <MDBTableBody>
+                            {getSubject.map((ele, id) => {
+                                return (<>
+                                    <tr>
+                                        <th>{id + 1}</th>
+                                        <td>{ele.grade}</td>
+                                        <td>{ele.semester}</td>
+                                        <td>{ele.subject}</td>
+                                        <td><button className='btn btn-danger' onClick={() => {deleteSubject(ele._id) }}><i class="fa-solid fa-trash-can"></i></button></td>
+                                    </tr>
+                                </>);
+
+                            })
+                            }
+
+
+
+                        </MDBTableBody>
+                    </MDBTable>
+                </div>
+            </div>
+        </div>
+    </>);
+}
+export default Subject;
+
+
+
+
+
+
+
+
+
+
+const subjectSchema = new mongoose.Schema({
+    grade: {
+        type: String,
+        required: true
+    },
+    subject: {
+        type: String,
+        required: true
+    },
+    semester:{
+        type: String,
+        required : true
+    }
+});
+
+
+
+router.post('/subject', async (req, res) => {
+    const { grade, subject,semester } = req.body;
+
+    if (!grade || !subject)
+        res.status(400).json({ "error": "PLease fill fields" });
+
+    try {
+        const subjectExist = await Subject.findOne({
+            $and: [
+                {
+                    grade: grade
+                },
+                {
+                    subject: subject
+                }
+            ]
+        })
+
+        if (subjectExist) {
+            console.log(subjectExist);
+            res.status(409).json({ "message": "Already Exist" });
+        }
+
+        else {
+            const subjectAdd = await Subject({ grade, subject,semester });
+            const subjectAddDone = await subjectAdd.save();
+            if (subjectAddDone) {
+                res.status(201).json({ "message": "Add successfully" });
+            }
+
+            res.status(422).json({ "error": " Failed to add!!" });
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+})

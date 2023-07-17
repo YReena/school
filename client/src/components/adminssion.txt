@@ -1,0 +1,578 @@
+import React ,{useState} from 'react';
+
+const Admission = () => {
+    const [error , setError] = useState("");
+
+    const  [ studentState , setStudent ] = useState({
+        firstname:"",middlename:"",lastname:"",fathername:"",mothername:"",grade:"",gender:"",admissionno:"",dob:"",session:"",adharcardno:"",address:"",mobileno:""
+    })
+    let name , value ;
+    const handleInputs=(e)=>{
+     name = e.target.name;
+     value = e.target.value;
+     setStudent({...studentState , [name]:value});
+    }
+
+    const submitinfo = async (e) =>{
+        e.preventDefault();
+        const { firstname,lastname,fathername,mothername,grade,gender,admissionno,dob,session,adharcardno,address,mobileno} = studentState ;
+        const res =  await fetch('/admission',{
+            method : "POST",
+            headers :{
+               
+                "Content-Type":"application/json"
+            },
+            body : JSON.stringify({
+                firstname,lastname,fathername,mothername,grade,gender,admissionno,dob,session,adharcardno,address,mobileno 
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.error){
+           setError(data.error);
+           console.log(data.error);
+        }
+        // else{
+        //     window.alert(" Registartion successfully    !!!...");
+        //     console.log(" Registration successfully    !!!...");
+            
+        //     navigate('/');
+        // }
+    }
+    
+    return (<>
+        <div className='admission_form'>
+            <div className='container'>
+                <h2 id="student_details_handing">Student Details</h2>
+                {/* {error && <p style={{"color":"red", "textAlign":"center","font-weight":"bolder"}}>{error}</p>}  */}
+                <form method="POST">
+                    <div className="row">
+                    <div className="col">
+                            <label>Admission No</label>
+                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={studentState.admissionno} onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>First Name</label>
+                            <input type="text" className="form-control" placeholder="First Name" name="firstname" value={studentState.firstname} onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>Last Name</label>
+                            <input type="text" className="form-control" placeholder="Last Name" name="lastname" value={studentState.lastname} onChange={handleInputs}/>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <label>Father's Name</label>
+                            <input type="text" className="form-control" placeholder="Father's name" name="fathername" value={studentState.fathername} onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>Mother's Name</label>
+                            <input type="text" className="form-control" placeholder="Mother's Name" name="mothername" value={studentState.mothername} onChange={handleInputs}/>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <label>Grade</label>
+                            <select id="inputgrade" class="form-control" name='grade' onChange={handleInputs} value={studentState.grade} >
+                                <option value="Nursary">Nursary</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+
+                            </select>
+                        </div>
+                        <div className="col">
+                            <label>Gender</label>
+                            <select id="inputgender" class="form-control" name='gender' onChange={handleInputs} value={studentState.gender} >
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                                <option>UKG</option>
+
+                            </select>
+                        </div>
+                        <div className="col">
+                            <label>D.O.B</label>
+                            <input type="date" className="form-control" placeholder="Admission No" name="dob" value={studentState.dob} onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>Session</label>
+                            <input type="text" className="form-control" placeholder="Session" name="session" value={studentState.session} onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>Adhar Card No</label>
+                            <input type="text" className="form-control" placeholder="Adhar Card No" name="adharcardno" value={studentState.adharcardno} onChange={handleInputs}/>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <label> Full Address</label>
+                            <input type="text" className="form-control" placeholder=" Full Address" name="address" value={studentState.address}  onChange={handleInputs}/>
+                        </div>
+                        <div className="col">
+                            <label>Mobile No</label>
+                            <input type="text" className="form-control" placeholder="Mobile No" name="mobileno" value={studentState.mobileno} onChange={handleInputs}/>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col">
+
+                        </div>
+                        <div className="col btn_submit">
+                            <button className=' btn-color' onClick={submitinfo} >Submit</button>
+                        </div>
+                    </div>
+                    
+
+
+                </form>
+            </div>
+
+        </div>
+
+    </>);
+
+}
+export default Admission;
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+
+const Student = () => {
+    const [result, setResult] = useState([]);
+   // const [date , setDate] = useState(new Date());
+    const [studentresult, setStudentResult] = useState({
+        admissionno: ""
+    });
+    let name, value;
+    const handleInputs = (e) => {
+        name = e.target.name;
+        value = e.target.value;
+        setStudentResult({ ...studentresult, [name]: value });
+    }
+
+    const search = async (e) => {
+        e.preventDefault();
+        const response = await fetch('/student/' + studentresult.admissionno, {
+            method: 'GET',
+            headers :{
+                Authorization : localStorage.getItem('token'),
+                "Content-Type":"application/json"
+            }
+        })
+
+        const data = await response.json();
+        setResult(data);
+    }
+
+
+    // const getData = async () => {
+    //     const response = await fetch('/student/' + studentresult.admissionno, {
+    //         method: 'GET',
+    //             header :{
+                 
+    //                 "Content-Type":"application/json"
+    //             }
+                
+            
+    //     })
+    //     const data = await response.json();
+    //     setResult([]);
+    // }
+    const deleteStudent = async (id) => {
+        const del = await fetch(`student/deletestudent/${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        const deloutput = await del.json();
+        if (deloutput.status === 404 && !deloutput)
+            console.log("error");
+
+        else {
+            console.log("delelted successfully");
+            // getData();
+
+        }
+    }
+
+    return (<>
+
+        <div id='student_details_form'>
+            <div className='container'>
+                <h2>Student Details</h2>
+                <form method='GET' >
+                    <div className="row">
+                        <div className="col">
+                            <label>Admission No</label>
+                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={studentresult.admissionno} onChange={handleInputs} />
+                        </div>
+
+
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <button className='button_search' onClick={search}>Search</button>
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <MDBTable>
+                        <MDBTableHead dark>
+                            <tr>
+                                <th scope='col'>ADM No</th>
+                                <th scope='col'>ADM Date</th>
+                                <th scope='col'>Student Name</th>
+                                <th scope='col'>Father's Name</th>
+                                <th scope='col'>Grade</th>
+                                <th scope='col'>Mobile No</th>
+                                <th scope='col'>Update</th>
+                                <th scope='col'>Delete</th>
+                            </tr>
+                        </MDBTableHead>
+                        <MDBTableBody>
+                            {
+                                result.map((element, id) => {
+                                    return (
+                                        <>
+                                            <tr>
+                                                <td>{element.admissionno}</td>
+                                                <td>{ element.createdAt && element.createdAt.substring(0, 10)}</td>
+                                                <td>{element.firstname + ' ' + element.lastname}</td>
+                                                <td>{element.fathername}</td>
+                                                <td>{element.grade}</td>
+                                                <td >{element.mobileno}</td>
+                                                <td><NavLink to={`/student/edit/${element._id}`}><button className='btn btn-success'><i class="fa-solid fa-pen"></i></button></NavLink></td>
+                                                <td><button className='btn btn-danger' onClick={() => { deleteStudent(element._id) }}><i class="fa-solid fa-trash-can"></i></button></td>
+                                            </tr>
+                                        </>
+                                    )
+                                })
+                            }
+
+                        </MDBTableBody>
+                    </MDBTable>
+
+                </div>
+            </div>
+        </div>
+
+    </>);
+
+}
+export default Student;
+
+
+
+import React, { useState, useEffect } from 'react';
+import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import { Grid } from '@mui/material';
+import logon from '../sahil.jpg';
+import Downloadpage from './Downloadpage';
+
+const Report = () => {
+
+    const [Subject, setSubject] = useState([]);
+    const [getStudent, setGetStudent] = useState({});
+    const [Grade, setGrade] = useState({});
+    const [student, setStudent] = useState({
+        admissionno: ""
+    });
+    const [firstSem, setFirstSem] = useState([]);
+    const [secondSem, setSecondSem] = useState([]);
+    const [thirdSem, setThirdSem] = useState([]);
+
+    let name, value;
+    const handleInput = (e) => {
+        name = e.target.name;
+        value = e.target.value;
+        setStudent({ ...student, [name]: value });
+    }
+
+    const searchInfo = async (e) => {
+        e.preventDefault();
+        const response = await fetch(`/student/${student.admissionno}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        const studentresult = await response.json();
+        if (studentresult.status !== 204) {
+            setGetStudent(studentresult[0]);
+            setGrade(studentresult[0].grade);
+        }
+    }
+
+
+
+    const getSubjectData = async () => {
+        console.log("inside getsubjectdata")
+        const sub = await fetch(`/subject/${Grade}`, {
+            method: 'GET'
+        });
+
+        const subList = await sub.json();
+        setSubject(subList);
+
+    }
+
+    useEffect(() => {
+        console.log("inside effect");
+        getSubjectData();
+    }, [Grade]);
+
+
+    useEffect(() => {
+        Firstsem();
+        Secondsem();
+        Thirdsem();
+    }, [Subject])
+
+
+    const Firstsem = async () => {
+        const first = await fetch('/firstsem/' + student.admissionno, {
+            method: "GET"
+        })
+
+        const Sem1 = await first.json();
+        if (Sem1.message != 'not found') {
+            firstSem.push(Sem1);
+            console.log(firstSem);
+        }
+    }
+
+
+    const Secondsem = async () => {
+        const second = await fetch('/secondsem/' + student.admissionno, {
+            method: "GET"
+        })
+
+        const Sem2 = await second.json();
+        if (Sem2.message != 'not found') {
+            secondSem.push(Sem2);
+            console.log(Sem2);
+        }
+    }
+
+    const Thirdsem = async () => {
+        const third = await fetch('/thirdsem/' + student.admissionno, {
+            method: "GET"
+        })
+
+        const Sem3 = await third.json();
+        if (Sem3.message != 'not found') {
+            thirdSem.push(Sem3);
+            console.log(Sem3);
+        }
+    }
+
+
+
+    return (<>
+        <div className='container' id='download'>
+            <div className='box-border'>
+                <div className='title-box'>
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <div className="sidebar-header school_logon">
+                                <img src={logon} alt='pic' id="img" />
+                            </div>
+                        </Grid>
+                        <Grid item xs={9}>
+                            <h2 id='school-title'>Little Hands Play School</h2>
+                            <h4>Gali no 1, Chanchal Park, Ranhola, Delhi 110041</h4>
+                            <p>Phone : 9953940313   Email : newlittlehandplayschool@gmail.com</p>
+                        </Grid>
+                    </Grid>
+                </div>
+                <div className='content-margin'>
+                    <div>
+                        <div className="row ">
+                            <div className="col">
+                                <label>Admission No</label>
+                                <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={student.admissionno} onChange={handleInput} />
+                            </div>
+                            <div className="col ">
+                                <button className='button_search' onClick={searchInfo}>Search</button>
+                            </div>
+                        </div>
+                        {getStudent && <div>
+                            <div className="row">
+                                <div className="col">
+                                    <label>Student Name</label>
+
+                                    <input type="text" className="form-control" placeholder="Student Name" name="firstname" value={getStudent.firstname} disabled />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <label>Grade</label>
+                                    <input type="text" className="form-control" placeholder="Grade" name="grade" value={getStudent.grade} />
+                                </div>
+                                <div className="col">
+                                    <label>Gender</label>
+                                    <input type="text" className="form-control" placeholder="Gender" name="gender" value={getStudent.gender} />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <label>Father's Name</label>
+                                    <input type="text" className="form-control" placeholder="Father's name" name="fathername" value={getStudent.fathername} />
+                                </div>
+                                <div className="col">
+                                    <label>Mother's Name</label>
+
+                                    <input type="text" className="form-control" placeholder="Mother's Name" name="mothername" value={getStudent.mothername} />
+                                </div>
+                            </div>
+                        </div>}
+                    </div>
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <MDBTable>
+                                <MDBTableHead dark>
+                                    <tr>
+                                        <th>Subject</th>
+                                    </tr>
+                                </MDBTableHead>
+                                <MDBTableBody>
+                                    {Subject.length != 0 && Subject.map((ele, id) => {
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <input type="text" className="form-control" placeholder="0" name="subject" value={ele.subject} disabled style={{ "margin-bottom": "0px" }} />
+                                                </td>
+                                            </tr>
+
+                                        );
+
+                                    })}
+                                </MDBTableBody>
+
+                            </MDBTable>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBTable>
+                                <MDBTableHead dark>
+                                    <tr>
+                                        <th>First Semester</th>
+                                    </tr>
+                                </MDBTableHead>
+                                <MDBTableBody>
+                                    {Object.keys(firstSem).length != 0 && Subject.map((ele, id) => {
+                                        const mrks = firstSem[0]
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <input type="text" className="form-control" placeholder="0" style={{ "margin-bottom": "0px" }} name={ele.subject} value={mrks.firstsem[ele.subject]} />
+                                                </td>
+                                            </tr>
+
+                                        );
+
+                                    })}
+                                </MDBTableBody>
+
+                            </MDBTable>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBTable>
+                                <MDBTableHead dark>
+                                    <tr>
+                                        <th>Second Semester</th>
+                                    </tr>
+                                </MDBTableHead>
+                                <MDBTableBody>
+                                    {Object.keys(secondSem).length != 0 && Subject.map((ele, id) => {
+                                        const mrksec = secondSem[0]
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <input type="text" className="form-control" placeholder="0" style={{ "margin-bottom": "0px" }} name={ele.subject} value={mrksec.secsem[ele.subject]} />
+                                                </td>
+                                            </tr>
+
+                                        );
+
+                                    })}
+
+                                </MDBTableBody>
+
+                            </MDBTable>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <MDBTable>
+                                <MDBTableHead dark>
+                                    <tr>
+                                        <th>Third Semester</th>
+
+                                    </tr>
+                                </MDBTableHead>
+                                <MDBTableBody>
+                                    {Object.keys(thirdSem).length != 0 && Subject.map((ele, id) => {
+                                        const mrkthird = thirdSem[0]
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <input type="text" className="form-control" placeholder="0" style={{ "margin-bottom": "0px" }} name={ele.subject} value={mrkthird.thirdsem[ele.subject]} />
+                                                </td>
+                                            </tr>
+
+                                        );
+
+                                    })}
+                                </MDBTableBody>
+
+                            </MDBTable>
+
+                            <Downloadpage rootElementId={"download"} downloadFileName="Report" />
+                        </Grid>
+
+                    </Grid>
+                </div>
+
+            </div>
+
+        </div>
+    </>);
+}
+export default Report;
+
+
+.gitignore
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
