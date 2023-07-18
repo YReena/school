@@ -41,8 +41,6 @@ const Login = () => {
             dispatch(getUser());
             navigate("/");
         }
-        else
-            window.alert("Invalid credentails..");
     }
     return (<>
         <div className='login'>
