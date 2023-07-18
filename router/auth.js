@@ -68,16 +68,7 @@ router.post('/login', async (req, res) => {
                     res.status(202).json({message: token ,adminExist});
                     console.log(token);
                     console.log("entered into token state");
-                
                 })
-                // const token = await adminExist.genrateAuthToken();
-                // console.log(token);
-                // // res.cookie("jwtoken",token,{
-                // //     expires: new Date(Date.now()+25892000000),
-                // //     httpOnly : true
-                // // })
-                // res.status(200).json({ "token": token });
-                // res.status(202).json({ message: "logged in succesfully!!" });
             }
            res.status(422).json({ error: "Invalid credentails" });
         }
