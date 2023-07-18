@@ -64,13 +64,15 @@ router.post('/login', async (req, res) => {
                     if(err){
                         console.log(err);
                         console.log("entered into error");
-                    }
+                    }else{
                     res.status(202).json({message: token ,adminExist});
                     console.log(token);
                     console.log("entered into token state");
+                    }
                 })
-            }
+            }else{
            res.status(422).json({ error: "Invalid credentails" });
+            }
         }
         else{
         res.status(422).json({ error: "Invalid credentails" });
