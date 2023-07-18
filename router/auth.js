@@ -59,13 +59,14 @@ router.post('/login', async (req, res) => {
         if (adminExist) {
             const adminPassword = await Admin.findOne({ password })
             if (adminPassword) {
-                console.log("entered into token state");
+                
                 jwt.sign({adminExist},process.env.SCRET_KEY,(err, token)=>{
                     if(err){
                         console.log(err);
                     }
                     res.status(202).json({message: token ,adminExist});
                     console.log(token);
+                    console.log("entered into token state");
                 
                 })
                 // const token = await adminExist.genrateAuthToken();
