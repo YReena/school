@@ -30,11 +30,12 @@ const Login = () => {
             })
         });
         const res = await data.json();
+        console.log(res);
         
-        if (data.status === 422) {
+        if (res.data === 422) {
             window.alert("please enter credentails !..");
         }
-        else if (data.status === 202) {
+        else if (res.status === 202) {
             window.alert("logged in successfully.... !..");
             localStorage.setItem('token' , res.message);
             dispatch(getUser());
