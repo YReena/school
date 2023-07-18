@@ -55,6 +55,7 @@ router.post('/login', async (req, res) => {
         const adminExist = await Admin.findOne({ email })
         console.log(adminExist);
         console.log("hellp");
+        console.log(process.env.SCRET_KEY);
         if (adminExist) {
             const adminPassword = await Admin.findOne({ password })
             if (adminPassword) {
