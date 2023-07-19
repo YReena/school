@@ -1,18 +1,19 @@
 let initial ={
-   tokn:""
+   tokn:"",
+   header:""
 }
 
 const studentredux = (state= initial,action)=>{
    console.log(action.payload);
  switch(action.type){
     case "User" :  
-    const  data= action.payload ;
-    return ({...state,tokn:data});
+    return ({...state,tokn:action.payload });
 
     case "delUser" :  
-    console.log(action.payload);
-    const  d= action.payload ;
-    return ({...state,tokn:d});
+    return ({...state,tokn:action.payload });
+
+    case "headAuth" :  
+    return ({...state,header:action.payload });
 
     default : return state ;
  }

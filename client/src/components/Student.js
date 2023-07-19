@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
 import { Modal, Button } from 'react-bootstrap';
-
+import { useSelector } from 'react-redux';
 
 const Student = () => {
+    const headerAuth = useSelector((state)=>state.studentredux.header)
     const [result, setResult] = useState([]);
     const [show, setShow] = useState(false);
     const [error, setError] = useState("");
@@ -31,7 +32,8 @@ const Student = () => {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
-                authorization : localStorage.getItem('token')
+               // authorization : localStorage.getItem('token')
+                  authorization : headerAuth
             }
         })
 
@@ -50,7 +52,8 @@ const Student = () => {
         const del = await fetch(`student/deletestudent/${id}`, {
             method: 'DELETE',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                authorization : headerAuth
             }
         })
         const deloutput = await del.json();

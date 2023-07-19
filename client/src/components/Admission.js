@@ -2,11 +2,13 @@ import { Modal, Button } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 
 
 const Admission = () => {
     let navigate = useNavigate();
+    const headerAuth = useSelector((state)=>state.studentredux.header);
     const [error, setError] = useState("");
 
     const [show, setShow] = useState(false);
@@ -56,25 +58,6 @@ const Admission = () => {
         // }
     }
 
-
-    /* ===== getstudents =====*/
-    const [getstudent, setGetStudent] = useState([]);
-    const Student = async () => {
-        const res = await fetch('/student', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-
-        const stud = await res.json(res);
-        setGetStudent(stud);
-    }
-    useEffect(()=>{
-       Student();
-       setStudent({ ...studentState, admissionno : getstudent.length+1});
-    },[getstudent])
-
     return (<>
         <div className='form'>
             <div className='container'>
@@ -84,7 +67,7 @@ const Admission = () => {
                     <div className="row">
                         <div className="col">
                             <label>Admission No</label>
-                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={getstudent.length+1} />
+                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={studentState.admissionno} onChange={handleInputs} />
                         </div>
                         <div className="col">
                             <label>First Name{studentState.firstname.length == 0 && <span style={{ "color": "red", "font-weight": "bolder" }}>*</span>}</label>
@@ -168,7 +151,6 @@ const Admission = () => {
                                 </Modal.Header>
                                {error.length == 0 && <Modal.Body style={{"font-weight":"bolder"}}>Information Submit Successfully</Modal.Body>} 
                                {error.length != 0 && <Modal.Body style={{"color":"red", "font-weight":"bolder"}}>Please fill mandatory fields</Modal.Body>}
-                                {console.log(error)}
 
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>

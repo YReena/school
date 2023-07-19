@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
-import {getUser} from '../Action/index'
+import {getUser, headerauthenication} from '../Action/index'
 
 
 const Login = () => {
@@ -29,15 +29,17 @@ const Login = () => {
                 email, password
             })
         });
+        console.log(data.status);
         const res = await data.json();
-        console.log(res);
+        console.log(res.status);
         
-        if (res.data === 422) {
+        if (data.status === 422) {
             window.alert("please enter credentails !..");
         }
-        else if (res.status === 202) {
+        else if (data.status === 202) {
             window.alert("logged in successfully.... !..");
-            localStorage.setItem('token' , res.message);
+            //localStorage.setItem('token' , res.message);
+            dispatch(headerauthenication(res.message))
             dispatch(getUser());
             navigate("/");
         }

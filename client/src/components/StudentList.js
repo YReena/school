@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
 import { useNavigate } from "react-router-dom";
+import { useDispatch,useSelector } from 'react-redux';
 
 const StudentList = () => {
     const navigate = useNavigate();
+    const headerAuth =  useSelector((state)=>state.studentredux.header);
     const [getstudent, setGetStudent] = useState([]);
     const Student = async () => {
         const res = await fetch('/student', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                authorization : localStorage.getItem('token')
+                //authorization : localStorage.getItem('token')
+                authorization : headerAuth
             }
         })
 

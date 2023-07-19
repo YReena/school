@@ -28,17 +28,17 @@ import {getUser,delUser} from '../Action/index'
 
 
 const Sidemenu = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [item, setItems] = useState([]);
     const [birth, setBirth] = useState([]);
     const USR = useSelector((state)=>state.studentredux);
+    console.log(USR);
     const getData = async () => {
         const res = await fetch('/student', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: localStorage.getItem('token')
+                //Authorization: localStorage.getItem('token')
+                 Authorization: USR.header
             }
         })
 
@@ -62,7 +62,7 @@ const Sidemenu = () => {
 
     }
     const Rendernemu = () => {
-        if (USR.tokn == '' || USR.tokn == 'reen') {
+        if (USR.tokn == '' || USR.tokn == 'deluser') {
             return (<>
                 <li>
                      {console.log("reena after login")}

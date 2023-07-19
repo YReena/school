@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 const Dashboard = () => {
     const [studCount, setStudCount] = useState(0);
@@ -7,12 +9,15 @@ const Dashboard = () => {
     const [amount, setAmount] = useState(0);
     const [explist, setExpList] = useState([]);
 
+    const headerAuth =  useSelector((state)=>state.studentredux.header);
+
     const getStudent = async () => {
         const res = await fetch('/student', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization : localStorage.getItem('token')
+               // Authorization : localStorage.getItem('token')
+                  authorization: headerAuth
             }
         })
 

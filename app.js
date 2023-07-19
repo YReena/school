@@ -10,11 +10,11 @@ app.use(express.json());
             
 //serving the frontend 
 
-app.use(express.static(path.join(__dirname,"./client/build")));
+// app.use(express.static(path.join(__dirname,"./client/build")));
 
-app.get("*",(req,res)=>{
-  res.sendFile(path.join(__dirname,"./client/build"));
-})
+// app.get("*",(req,res)=>{
+//   res.sendFile(path.join(__dirname,"./client/build"));
+// })
 
 app.use(require('./router/auth'));
 require('./db/conn');

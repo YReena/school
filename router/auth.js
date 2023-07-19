@@ -15,6 +15,65 @@ const { Teacher } = require('../model/studSchema');
 
 
 /* ------------------- ADMISSION ROUTERS ------------------------*/
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password)
+        res.status(422).json({ error: " please enter credentials" });
+
+    try {
+        const adminExist = await Admin.findOne({ email })
+        if (adminExist) {
+            const adminPassword = await Admin.findOne({ password })
+            if (adminPassword) {
+                jwt.sign({adminExist},process.env.SCRET_KEY,(err, token)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                    res.status(202).json({message: token ,adminExist});
+                    }
+                })
+            }else{
+           res.status(422).json({ error: "Invalid credentails" });
+            }
+        }
+        else{
+        res.status(422).json({ error: "Invalid credentails" });
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+
+    // try{
+    //     const admin = new Admin({email , password});
+    //     const adminsave = await admin.save();
+
+    //     if(adminsave)
+    //     res.status(200).json({message:"add successfully"});
+    // }
+    // catch(err){
+    //     console.log(err);
+    // }
+})
+const verify=(req, res, next)=>{
+    var token = req.headers['authorization'];
+    console.log(token);
+    if(token != 'undefined'){
+        jwt.verify(token, process.env.SCRET_KEY, (err, valid)=>{
+            if(err){
+               res.status(201).json({message :"please provide valid token"});
+               console.log(err);
+            }else{
+             next();
+            }
+        })
+    }
+    else{
+        res.status(422).json({message:"please add valid token to headers"});
+    }
+
+}
 router.post('/admission', async (req, res) => {
     const { admissionno, firstname, lastname, fathername, mothername, grade, gender, dob, session, adharcardno, address, mobileno } = req.body;
     if (!firstname || !lastname || !fathername || !mothername || !grade || !gender || !admissionno || !dob || !session || !adharcardno ) {
@@ -46,75 +105,11 @@ router.post('/admission', async (req, res) => {
         console.log(err);
     }
 })
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password)
-        res.status(422).json({ error: " please enter credentials" });
-
-    try {
-        const adminExist = await Admin.findOne({ email })
-        console.log(adminExist);
-        console.log("hellp");
-        console.log(process.env.SCRET_KEY);
-        if (adminExist) {
-            const adminPassword = await Admin.findOne({ password })
-            if (adminPassword) {
-                console.log("entered into state");
-                jwt.sign({adminExist},process.env.SCRET_KEY,(err, token)=>{
-                    if(err){
-                        console.log(err);
-                        console.log("entered into error");
-                    }else{
-                    res.status(202).json({message: token ,adminExist});
-                    console.log(token);
-                    console.log("entered into token state");
-                    }
-                })
-            }else{
-           res.status(422).json({ error: "Invalid credentails" });
-            }
-        }
-        else{
-        res.status(422).json({ error: "Invalid credentails" });
-        }
-    }
-    catch (err) {
-        console.log(err);
-    }
 
 
-    // try{
-    //     const admin = new Admin({email , password});
-    //     const adminsave = await admin.save();
-
-    //     if(adminsave)
-    //     res.status(200).json({message:"add successfully"});
-    // }
-    // catch(err){
-    //     console.log(err);
-    // }
-})
 
 
-const verify=(req, res, next)=>{
-    var token = req.headers['authorization'];
-    console.log(token);
-    if(token != 'undefined'){
-        jwt.verify(token, process.env.SCRET_KEY, (err, valid)=>{
-            if(err){
-               res.status(201).json({message :"please provide valid token"});
-               console.log(err);
-            }else{
-             next();
-            }
-        })
-    }
-    else{
-        res.status(422).json({message:"please add valid token to headers"});
-    }
-
-}
-router.get('/student/:admissionno',verify, async (req, res) => {
+router.get('/student/:admissionno', async (req, res) => {
     try {
         const admissionno = req.params.admissionno;
         const studentInfo = await Student.find({ admissionno })
@@ -135,7 +130,7 @@ router.get('/student',verify, async (req, res) => {
     res.status(201).json(totalStudent);
 })
 
-router.get('/student/edit/:id',verify, async (req, res) => {
+router.get('/student/edit/:id', async (req, res) => {
     const id = req.params.id;
 
     const studentExist = await Student.find({ _id: id });
@@ -143,7 +138,7 @@ router.get('/student/edit/:id',verify, async (req, res) => {
     res.status(201).json(studentExist);
 })
 
-router.delete('/student/deleteStudent/:id',verify, async (req, res) => {
+router.delete('/student/deleteStudent/:id', async (req, res) => {
     const id = req.params.id;
     const delstudent = await Student.deleteOne({ _id: id });
     if (delstudent)
@@ -153,7 +148,7 @@ router.delete('/student/deleteStudent/:id',verify, async (req, res) => {
         res.status(404).json("error");
 })
 
-router.patch('/student/update/:id', verify,async (req, res) => {
+router.patch('/student/update/:id', async (req, res) => {
     const id = req.params.id;
     const data = req.body;
     const resultfound = await Student.findByIdAndUpdate(id, data, {

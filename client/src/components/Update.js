@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 const Update = () => {
     let navigate = useNavigate();
+    const headerAuth = useSelector((state)=>state.studentredux.header);
     const obj = useParams("");
     const [error, setError] = useState("");
     const [show, setShow] = useState(false);
@@ -31,7 +33,8 @@ const Update = () => {
         const res = await fetch(`/student/edit/${obj.id}`, {
             method: 'GET',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                authorization : headerAuth
             }
         })
         const output = await res.json();

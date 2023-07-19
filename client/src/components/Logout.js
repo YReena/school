@@ -8,10 +8,9 @@ const Logout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
     useEffect(()=>{
-     localStorage. removeItem('token');
+     //localStorage. removeItem('token');
      dispatch(delUser());
      navigate("/login");
-     console.log("logoutpage");
     },[]);
   return (
     <></>
