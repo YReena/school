@@ -77,7 +77,7 @@ const Update = () => {
                     <div className="row">
                     <div className="col">
                             <label>Admission No</label>
-                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={studentState.admissionno} onChange={handleInputs} />
+                            <input type="text" className="form-control" placeholder="Admission No" name="admissionno" value={studentState.admissionno} onChange={handleInputs} disabled/>
                         </div>
                         <div className="col">
                             <label>First Name</label>
